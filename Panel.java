@@ -147,7 +147,7 @@ public class Panel {
         frame.setVisible(true);
 
     }
-
+    // determines if a point is inside or outside a triangle
     static boolean sameSide(Vertex A, Vertex B, Vertex C, Vertex p) {
         Vertex V1V2 = new Vertex(B.x - A.x,B.y - A.y, B.z - A.z);
         Vertex V1V3 = new Vertex(C.x - A.x,C.y - A.y,C.z - A.z);
