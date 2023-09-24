@@ -1,3 +1,5 @@
+// this version creates a rotatable tetrahedron with colors
+
 package Renderer;
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
@@ -8,16 +10,14 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Path2D;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
-import java.util.Arrays;
 import java.awt.Point;
 
 
-public class Panel {
+public class PanelBackUp {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -29,7 +29,6 @@ public class Panel {
         JPanel renderPanel = new JPanel() {
             private static Point p = new Point(0, 0);
             public void paintComponent(Graphics g) {
-                
                 Graphics2D g2 = (Graphics2D) g; //WHAT DOES THIS LINE MEAN <- cast g to graphics2d 
                 g2.setColor(Color.BLACK);
                 g2.fillRect(0, 0, getWidth(), getHeight());
@@ -62,6 +61,8 @@ public class Panel {
 
                 int x = (int)p.getX();
                 int y = (int)p.getY();
+      
+           
 
                 pane.addMouseMotionListener(new MouseMotionListener() {
                     @Override
@@ -81,6 +82,11 @@ public class Panel {
                         // empty bc we dont want default inherited abstract method 
                     }
                 });
+
+        
+                    
+        
+
                 
                 double heading = Math.toRadians(x);
                     Matrix3 headingTransform = new Matrix3(new double[]{
@@ -99,63 +105,30 @@ public class Panel {
 
                 g2.translate(getWidth() /2, getHeight() / 2);
 
-                BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-                
+
                 for(Triangle t: tris) {
                     g2.setColor(t.color);
                     Vertex v1 = transform.transform(t.v1);
-                    v1.x += getWidth();
-                    v1.y += getHeight();
                     Vertex v2 = transform.transform(t.v2);
-                    v2.x += getWidth();
-                    v2.y += getHeight();
                     Vertex v3 = transform.transform(t.v3);
-                    v3.x += getWidth();
-                    v3.y += getHeight();
-
-                    int minX = (int) Math.max(0, Math.ceil(Math.min(v1.x, Math.min(v2.x, v3.x))));
-                    int maxX = (int) Math.min(img.getWidth() - 1, Math.floor(Math.max(v1.y, Math.max(v2.y, v3.y))));
-
-                    int minY = (int) Math.max(0, Math.ceil(Math.min(v1.x, Math.min(v2.x, v3.x))));
-                    int maxY = (int) Math.min(img.getWidth() - 1, Math.floor(Math.max(v1.y, Math.max(v2.y, v3.y))));
-
-                    for (int y2 = minY; y2 <= maxY; y2++) {
-                        for (int x2 = minX; x2 <= maxX; x2++) {
-                            Vertex p = new Vertex (x, y , 0);
-                            boolean V1 = sameSide(v1,v2,v3,p);
-                            boolean V2 = sameSide(v2,v3,v1,p);
-                            boolean V3 = sameSide(v3,v1,v2,p);
-                            if (V3 && V2 && V1) {
-                                img.setRGB(x2, y2, t.color.getRGB());
-                            }
-                        }
-                    }
-
-                    // Path2D path = new Path2D.Double();
-                    // path.moveTo(v1.x, v1.y);
-                    // path.lineTo(v2.x, v2.y);
-                    // path.lineTo(v3.x, v3.y);
-                    // path.closePath();
-                    // g2.draw(path);
-                    g2.drawImage(img, 0, 0, null);
+                    Path2D path = new Path2D.Double();
+                    path.moveTo(v1.x, v1.y);
+                    path.lineTo(v2.x, v2.y);
+                    path.lineTo(v3.x, v3.y);
+                    path.closePath();
+                    g2.draw(path);
                 }
-                // g2.drawImage(img, 0, 0, null);
+            
+        
+
+             
             }
         }; // WHAT IS THIS WHY DOES IT NEED A SEMICOLON <- this is an anonymous class
         pane.add(renderPanel, BorderLayout.CENTER); 
-        frame.setSize(600, 600); // why do i have to put the frame settings outside of the scope where it's declared?
+        frame.setSize(1000, 1000); // why do i have to put the frame settings outside of the scope where it's declared?
         frame.setVisible(true);
 
-    }
-    // determines if a point is inside or outside a triangle
-    static boolean sameSide(Vertex A, Vertex B, Vertex C, Vertex p) {
-        Vertex V1V2 = new Vertex(B.x - A.x,B.y - A.y, B.z - A.z);
-        Vertex V1V3 = new Vertex(C.x - A.x,C.y - A.y,C.z - A.z);
-        Vertex V1P = new Vertex(p.x - A.x,p.y - A.y,p.z - A.z);
-
-        double V1V2CrossV1V3 = V1V2.x * V1V3.y - V1V3.x * V1V2.y;
-        double V1V2CrossP = V1V2.x * V1P.y - V1P.x * V1V2.y;
-        return (V1V2CrossV1V3 * V1V2CrossP) >= 0;
+        
     }
 }
 
